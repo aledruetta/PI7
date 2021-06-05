@@ -14,7 +14,7 @@ HTTP_RESPONSE_NOT_FOUND = 404
 
 
 class ApiUser(Resource):
-    def post(serf):
+    def post(self):
         body = request.get_json()
         password = sha256_crypt.hash(body.password)
         user = UserAuth(email=body.email, password=password)
