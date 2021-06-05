@@ -12,10 +12,12 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    if os.environ["FLASK_ENV"] == "development":
+    if os.environ["FLASK_ENV"] == "production":
+        app.config.from_object("webapp.config.Production")
+    elif os.environ["FLASK_ENV"] == "development":
         app.config.from_object("webapp.config.Development")
     else:
-        app.config.from_object("webapp.config.Production")
+        app.config.from_object("webapp.config.Testing")
 
     db.init_app(app)
     jwt.init_app(app)
