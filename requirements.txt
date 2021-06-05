@@ -1,0 +1,17 @@
+Flask==2.0.1
+Flask-Admin
+Flask-Cors
+Flask-JWT
+Flask-Login
+Flask-Migrate
+Flask-MQTT
+Flask-RESTful
+Flask-SQLAlchemy
+Flask-WTF
+Jinja2
+passlib
+psycopg2-binary
+python-dotenv
+requests
+WTForms
+wtforms[email]
