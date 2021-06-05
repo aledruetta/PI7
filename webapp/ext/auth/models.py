@@ -12,13 +12,16 @@ class UserAuth(UserMixin, db.Model):
     email = db.Column("email", db.String(255), nullable=False, unique=True)
     password = db.Column("password", db.String(255), nullable=False)
     created_on = db.Column(
-        "created_on", db.DateTime(timezone=True), server_default=func.utcnow(), nullable=False
+        "created_on",
+        db.DateTime(timezone=True),
+        server_default=func.current_timestamp(),
+        nullable=False,
     )
     updated_on = db.Column(
         "updated_on",
         db.DateTime(timezone=True),
-        server_default=func.utcnow(),
-        onupdate=func.utcnow(),
+        server_default=func.current_timestamp(),
+        onupdate=func.current_timestamp(),
         nullable=False,
     )
     is_admin = db.Column("is_admin", db.Boolean, default=False)
