@@ -10,8 +10,10 @@ class UserAuth(UserMixin, db.Model):
     id = db.Column("id", db.Integer, primary_key=True)
     email = db.Column("email", db.String(255), nullable=False, unique=True)
     password = db.Column("password", db.String(255), nullable=False)
-    created_on = db.Column("created_on", db.DateTime, default=datetime.now)
-    updated_on = db.Column("updated_on", db.DateTime, default=datetime.now, onupdate=datetime.now)
+    created_on = db.Column("created_on", db.DateTime, default=datetime.now, nullable=False)
+    updated_on = db.Column(
+        "updated_on", db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    )
     is_admin = db.Column("is_admin", db.Boolean, default=False)
 
     def json(self) -> dict:

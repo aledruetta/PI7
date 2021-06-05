@@ -8,8 +8,10 @@ class Thing(db.Model):
 
     id = db.Column("id", db.Integer, primary_key=True)
     mac = db.Column("mac", db.String, unique=True, nullable=False)
-    created_on = db.Column("created_on", db.DateTime, default=datetime.now)
-    updated_on = db.Column("updated_on", db.DateTime, default=datetime.now, onupdate=datetime.now)
+    created_on = db.Column("created_on", db.DateTime, default=datetime.now, nullable=False)
+    updated_on = db.Column(
+        "updated_on", db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    )
 
     user_id = db.Column("user_id", db.Integer, db.ForeignKey("user_auth.id"), nullable=False)
     user = db.relationship(
