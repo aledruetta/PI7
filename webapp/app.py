@@ -11,7 +11,7 @@ from webapp.ext import api, auth, db, jwt, mqtt, site
 
 def create_app():
     app = Flask(__name__)
-    # CORS(app)
+    CORS(app)
 
     if os.environ["FLASK_ENV"] == "production":
         app.config.from_object("webapp.config.Production")
