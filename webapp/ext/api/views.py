@@ -1,4 +1,5 @@
 from datetime import datetime
+from webapp.ext.api.models import Thing
 
 from flask_restful import Resource
 
@@ -28,7 +29,9 @@ class ApiUser(Resource):
 
 class ApiThingAll(Resource):
     def get(self):
-        ...
+        coisas = Thing.query.all()
+
+        return {"coisas": [coisa.json() for coisa in coisas]}
 
 
 class ApiThing(Resource):
