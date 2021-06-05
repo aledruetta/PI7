@@ -1,6 +1,7 @@
 import os
 import ssl
 
+from datetime import timedelta
 from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -25,6 +26,10 @@ class Production(Config):
     MQTT_BROKER_PORT = 1883
     MQTT_USERNAME = os.getenv("MQTT_USERNAME")
     MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
+
+    JWT_AUTH_USERNAME_KEY = "email"
+    JWT_AUTH_URL_RULE = "/token"
+    JWT_EXPIRATION_DELTA = timedelta(seconds=86400)  # one day
 
 
 class Development(Config):
