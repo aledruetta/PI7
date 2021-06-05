@@ -1,5 +1,7 @@
 from datetime import datetime
+from passlib.hash import sha256_crypt
 
+from flask import request
 from flask_jwt import jwt_required
 from flask_restful import Resource
 
@@ -9,6 +11,17 @@ from webapp.ext.db import db
 
 HTTP_RESPONSE_CREATED = 201
 HTTP_RESPONSE_NOT_FOUND = 404
+
+
+class ApiUserSignup(Resource):
+    def post(serf):
+        body = request.get_json()
+        password = sha256_crypt.hash(body.password)
+        user = UserAuth(email=body.email, password=password)
+        db.session.add(user)
+        db.session.commit()
+
+        return HTTP_RESPONSE_CREATED
 
 
 class ApiUserAll(Resource):
