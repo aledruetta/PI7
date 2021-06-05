@@ -14,15 +14,15 @@ class UserAuth(UserMixin, db.Model):
     created_on = db.Column(
         "created_on",
         db.DateTime(timezone=True),
-        server_default=func.current_timestamp(),
         nullable=False,
+        default=datetime.utcnow,
     )
     updated_on = db.Column(
         "updated_on",
         db.DateTime(timezone=True),
-        server_default=func.current_timestamp(),
-        onupdate=func.current_timestamp(),
         nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
     )
     is_admin = db.Column("is_admin", db.Boolean, default=False)
 
