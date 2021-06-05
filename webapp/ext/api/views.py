@@ -13,7 +13,7 @@ HTTP_RESPONSE_CREATED = 201
 HTTP_RESPONSE_NOT_FOUND = 404
 
 
-class ApiUserSignup(Resource):
+class ApiUser(Resource):
     def post(serf):
         body = request.get_json()
         password = sha256_crypt.hash(body.password)
@@ -23,8 +23,6 @@ class ApiUserSignup(Resource):
 
         return HTTP_RESPONSE_CREATED
 
-
-class ApiUserAll(Resource):
     @jwt_required()
     def get(self):
         usuarios = UserAuth.query.all()
@@ -32,7 +30,7 @@ class ApiUserAll(Resource):
         return {"usuarios": [user.json() for user in usuarios]}
 
 
-class ApiUser(Resource):
+class ApiUserId(Resource):
     @jwt_required()
     def get(self, user_id):
         try:
@@ -43,7 +41,7 @@ class ApiUser(Resource):
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
 
-class ApiThingAll(Resource):
+class ApiThing(Resource):
     @jwt_required()
     def get(self):
         coisas = Thing.query.all()
@@ -51,7 +49,7 @@ class ApiThingAll(Resource):
         return {"coisas": [coisa.json() for coisa in coisas]}
 
 
-class ApiThing(Resource):
+class ApiThingId(Resource):
     @jwt_required()
     def get(self, thing_id):
         try:
