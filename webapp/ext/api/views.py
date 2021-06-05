@@ -2,6 +2,7 @@ from datetime import datetime
 
 from flask import request
 from flask_jwt import jwt_required
+from flask_login import current_user
 from flask_restful import Resource
 from passlib.hash import sha256_crypt
 
@@ -21,7 +22,7 @@ class ApiUser(Resource):
         db.session.add(user)
         db.session.commit()
 
-        return HTTP_RESPONSE_CREATED
+        return {"response": "Created!"}, HTTP_RESPONSE_CREATED
 
     @jwt_required()
     def get(self):
@@ -42,6 +43,15 @@ class ApiUserId(Resource):
 
 
 class ApiThing(Resource):
+    @jwt_required()
+    def post(self):
+        body = request.json
+        thing = Thing(mac=body["mac"], user=current_user)
+        db.session.add(thing)
+        db.session.commit()
+
+        return {"response": "Created!"}, HTTP_RESPONSE_CREATED
+
     @jwt_required()
     def get(self):
         coisas = Thing.query.all()
