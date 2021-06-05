@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 

@@ -1,9 +1,9 @@
 from datetime import datetime
-from passlib.hash import sha256_crypt
 
 from flask import request
 from flask_jwt import jwt_required
 from flask_restful import Resource
+from passlib.hash import sha256_crypt
 
 from webapp.ext.api.models import Thing
 from webapp.ext.auth import UserAuth
@@ -15,9 +15,9 @@ HTTP_RESPONSE_NOT_FOUND = 404
 
 class ApiUser(Resource):
     def post(self):
-        body = request.get_json()
-        password = sha256_crypt.hash(body.password)
-        user = UserAuth(email=body.email, password=password)
+        body = request.json
+        password = sha256_crypt.hash(body["password"])
+        user = UserAuth(email=body["email"], password=password)
         db.session.add(user)
         db.session.commit()
 
