@@ -7,6 +7,7 @@ class Thing(db.Model):
     __tablename__ = "thing"
 
     id = db.Column("id", db.Integer, primary_key=True)
+    mac = db.Column("mac", db.String, unique=True, nullable=False)
     created_on = db.Column("created_on", db.DateTime, default=datetime.now)
     updated_on = db.Column("updated_on", db.DateTime, default=datetime.now, onupdate=datetime.now)
 
