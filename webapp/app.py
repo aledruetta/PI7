@@ -12,6 +12,7 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
 
+    print(os.environ["FLASK_ENV"])
     if os.environ["FLASK_ENV"] == "production":
         app.config.from_object("webapp.config.Production")
     elif os.environ["FLASK_ENV"] == "development":
