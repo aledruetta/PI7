@@ -18,7 +18,13 @@ class Thing(db.Model):
     )
 
     def json(self) -> dict:
-        return {"id": self.id, "created_on": self.created_on, "user_id": self.user_id}
+        return {
+            "id": self.id,
+            "created_on": datetime.timestamp(self.created_on),
+            "updated_on": datetime.timestamp(self.updated_on),
+            "user_id": self.user_id,
+            "mac": self.mac,
+        }
 
     def __repr__(self) -> str:
-        return f"ThingId: {self.id}"
+        return f"Thing: {self.mac}"
