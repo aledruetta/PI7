@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from flask_login import UserMixin
+from sqlalchemy.sql import func
 
 from webapp.ext.db import db
 
@@ -10,9 +11,15 @@ class UserAuth(UserMixin, db.Model):
     id = db.Column("id", db.Integer, primary_key=True)
     email = db.Column("email", db.String(255), nullable=False, unique=True)
     password = db.Column("password", db.String(255), nullable=False)
-    created_on = db.Column("created_on", db.DateTime, default=datetime.now, nullable=False)
+    created_on = db.Column(
+        "created_on", db.DateTime(timezone=True), server_default=func.utcnow(), nullable=False
+    )
     updated_on = db.Column(
-        "updated_on", db.DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+        "updated_on",
+        db.DateTime(timezone=True),
+        server_default=func.utcnow(),
+        onupdate=func.utcnow(),
+        nullable=False,
     )
     is_admin = db.Column("is_admin", db.Boolean, default=False)
 
