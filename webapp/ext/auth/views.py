@@ -4,10 +4,10 @@ from flask_wtf import FlaskForm
 from wtforms import PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length
+from passlib.hash import sha256_crypt
 
 from webapp.ext.auth import UserAuth
 from webapp.ext.db import db
-from webapp.ext.bcrypt import bcrypt
 
 bp = Blueprint("auth", __name__)
 
@@ -24,7 +24,7 @@ def login():
     if form.validate_on_submit():
         user = UserAuth.query.filter(UserAuth.email == form.email.data).scalar()
 
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
+        if user and sha256_crypt.verify(form.password.data, user.password):
             login_user(user)
             return redirect(url_for("site.index"))
 
@@ -38,7 +38,7 @@ def signup():
     form = LoginForm()
 
     if form.validate_on_submit():
-        password = bcrypt.generate_password_hash(form.password.data)
+        password = sha256_crypt.hash(form.password.data)
         user = UserAuth(email=form.email.data, password=password)
         db.session.add(user)
         db.session.commit()

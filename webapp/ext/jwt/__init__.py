@@ -1,12 +1,12 @@
 from flask_jwt import JWT
+from passlib.hash import sha256_crypt
 
 from webapp.ext.auth.models import UserAuth
-from webapp.ext.bcrypt import bcrypt
 
 
 def authenticate(email, password):
-    user = UserAuth.query.filter(UserAuth.email == email).scalar()
-    if bcrypt.check_password_hash(user.password, password):
+    user = UserAuth.query.filter_by(email=email).first()
+    if sha256_crypt.verify(password, user.password):
         return user
 
 
