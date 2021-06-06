@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 from flask_wtf import FlaskForm
-from passlib.hash import sha256_crypt
+from bcrypt import check_password_hash
 from wtforms import PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length
@@ -22,9 +22,9 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = UserAuth.query.filter_by(email=form.email.data).first()
+        user = UserAuth.query.filter(UserAuth.email == form.email.data).scalar()
 
-        if user and sha256_crypt.verify(form.password.data, user.password):
+        if user and check_password_hash(user.password, form.password.data):
             login_user(user)
             return redirect(url_for("site.index"))
 
