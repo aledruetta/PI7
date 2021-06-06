@@ -1,10 +1,10 @@
 from datetime import datetime
-from flask import escape
 
-from flask import request
+from flask import escape, request
 from flask_jwt import jwt_required
 from flask_restful import Resource
 from passlib.hash import sha256_crypt
+import sqlalchemy
 from validate_email import validate_email
 
 from webapp.ext.api.models import Thing
@@ -25,7 +25,10 @@ class ApiUser(Resource):
 
         password = sha256_crypt.hash(request.json["password"])
 
-        user = UserAuth(email=email, password=password)
+        try:
+            user = UserAuth(email=email, password=password)
+        except sqlalchemy.exc.IntegrityError:
+            return {"error": "A conta de usuário já existe!"}, HTTP_BAD_REQUEST
 
         db.session.add(user)
         db.session.commit()
