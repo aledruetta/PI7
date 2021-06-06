@@ -20,18 +20,17 @@ class ApiUser(Resource):
     def post(self):
         email = request.json["email"]
 
-        # if not validate_email(email):
-        #     return {"error": "Email inválido!"}, HTTP_BAD_REQUEST
+        if not validate_email(email, check_smtp=False):
+            return {"error": "Email inválido!"}, HTTP_BAD_REQUEST
 
         password = sha256_crypt.hash(request.json["password"])
 
         try:
             user = UserAuth(email=email, password=password)
+            db.session.add(user)
+            db.session.commit()
         except sqlalchemy.exc.IntegrityError:
             return {"error": "A conta de usuário já existe!"}, HTTP_BAD_REQUEST
-
-        db.session.add(user)
-        db.session.commit()
 
         return {"response": "Created!"}, HTTP_RESPONSE_CREATED
 
