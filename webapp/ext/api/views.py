@@ -18,17 +18,14 @@ HTTP_BAD_REQUEST = 400
 
 class ApiUser(Resource):
     def post(self):
-        body = request.json
+        email = request.json["email"]
 
-        email = escape(body["email"])
-        password = escape(body["password"])
+        # if not validate_email(email):
+        #     return {"error": "Email inválido!"}, HTTP_BAD_REQUEST
 
-        password = sha256_crypt.hash(password)
+        password = sha256_crypt.hash(request.json["password"])
 
-        if not validate_email(email):
-            return {"error": "Email inválido!"}, HTTP_BAD_REQUEST
-
-        user = UserAuth(email, password)
+        user = UserAuth(email=email, password=password)
 
         db.session.add(user)
         db.session.commit()
