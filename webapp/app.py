@@ -3,14 +3,12 @@
 import os
 
 from flask import Flask
-from flask_cors import CORS
 
-from webapp.ext import api, bcrypt, db, jwt
+from webapp.ext import api, db, jwt
 
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
 
     if os.environ["FLASK_ENV"] == "production":
         app.config.from_object("webapp.config.Production")
@@ -20,11 +18,7 @@ def create_app():
         app.config.from_object("webapp.config.Testing")
 
     db.init_app(app)
-    bcrypt.init_app(app)
     jwt.init_app(app)
-    # auth.init_app(app)
-    # mqtt.init_app(app)
     api.init_app(app)
-    # site.init_app(app)
 
     return app
