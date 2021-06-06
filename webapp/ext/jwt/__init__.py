@@ -1,5 +1,5 @@
 from flask_jwt import JWT
-from bcrypt import check_password_hash
+from flask_bcrypt import check_password_hash
 
 from webapp.ext.auth.models import UserAuth
 

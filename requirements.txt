@@ -1,5 +1,6 @@
 Flask
 Flask-Admin
+Flask-Bcrypt
 Flask-Cors
 Flask-JWT
 Flask-Login
@@ -9,7 +10,6 @@ Flask-RESTful
 Flask-SQLAlchemy
 Flask-WTF
 Jinja2
-bcrypt
 py3-validate-email
 psycopg2-binary
 python-dotenv

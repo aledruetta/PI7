@@ -2,7 +2,7 @@ import sqlalchemy
 from flask import request
 from flask_jwt import jwt_required
 from flask_restful import Resource
-from bcrypt import generate_password_hash
+from flask_bcrypt import generate_password_hash
 from validate_email import validate_email
 
 from webapp.ext.api.models import Thing
