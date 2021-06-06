@@ -1,4 +1,4 @@
-from datetime import datetime, time, timezone
+from datetime import datetime
 
 from webapp.ext.db import db
 

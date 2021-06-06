@@ -21,7 +21,7 @@ def create_app():
 
     db.init_app(app)
     jwt.init_app(app)
-    auth.init_app(app)
+    # auth.init_app(app)
     # mqtt.init_app(app)
     api.init_app(app)
     # site.init_app(app)

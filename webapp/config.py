@@ -14,6 +14,9 @@ class Config:
     TESTING = False
     DEBUG = False
 
+    STATIC_FOLDER = "static"
+    TEMPLATES_FOLDER = "templates"
+
     SECRET_KEY = os.getenv("SECRET_KEY")
     TEMPLATES_AUTO_RELOAD = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -37,10 +40,12 @@ class Development(Config):
 
     SQLALCHEMY_DATABASE_URI = os.getenv("DEV_DATABASE_URI")
 
-    MQTT_BROKER_URL = os.getenv("MQTT_BROKER_URL")
     MQTT_BROKER_PORT = 8883
+    MQTT_BROKER_URL = os.getenv("MQTT_BROKER_URL")
     MQTT_USERNAME = os.getenv("MQTT_USERNAME")
     MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
+
+    # MQTT over TLS
     MQTT_KEEPALIVE = 5
     MQTT_TLS_ENABLED = True
     MQTT_TLS_VERSION = ssl.PROTOCOL_TLSv1_2
