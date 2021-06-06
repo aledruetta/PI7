@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from flask import escape, request
+import sqlalchemy
+from flask import request
 from flask_jwt import jwt_required
 from flask_restful import Resource
 from passlib.hash import sha256_crypt
-import sqlalchemy
 from validate_email import validate_email
 
 from webapp.ext.api.models import Thing
