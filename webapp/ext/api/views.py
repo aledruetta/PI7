@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from flask import escape, request
+import sqlalchemy
+from flask import request
 from flask_jwt import jwt_required
 from flask_restful import Resource
-from passlib.hash import sha256_crypt
-import sqlalchemy
 from validate_email import validate_email
+from werkzeug.security import generate_password_hash
 
 from webapp.ext.api.models import Thing
 from webapp.ext.auth import UserAuth
@@ -23,10 +23,10 @@ class ApiUser(Resource):
         if not validate_email(email, check_smtp=False):
             return {"error": "Email inválido!"}, HTTP_BAD_REQUEST
 
-        password = sha256_crypt.hash(request.json["password"])
+        password_hash = generate_password_hash(request.json["password"], method="sha256")
 
         try:
-            user = UserAuth(email=email, password=password)
+            user = UserAuth(email=email, password=password_hash)
             db.session.add(user)
             db.session.commit()
         except sqlalchemy.exc.IntegrityError:
