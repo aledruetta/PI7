@@ -45,7 +45,7 @@ class ApiThing(Resource):
     @jwt_required()
     def post(self):
         body = request.json
-        thing = Thing(mac=body["mac"], user=UserAuth.query.find_by(email=body["email"]))
+        thing = Thing(mac=body["mac"], user=UserAuth.query.filter_by(email=body["email"])).first()
         db.session.add(thing)
         db.session.commit()
 
