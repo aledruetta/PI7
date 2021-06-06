@@ -2,7 +2,6 @@ from datetime import datetime
 
 from flask import request
 from flask_jwt import jwt_required
-from flask_login import current_user
 from flask_restful import Resource
 from passlib.hash import sha256_crypt
 
@@ -26,17 +25,17 @@ class ApiUser(Resource):
 
     @jwt_required()
     def get(self):
-        usuarios = UserAuth.query.all()
+        users = UserAuth.query.all()
 
-        return {"usuarios": [user.json() for user in usuarios]}
+        return {"usuarios": [user.json() for user in users]}
 
 
 class ApiUserId(Resource):
     @jwt_required()
     def get(self, user_id):
         try:
-            usuario = UserAuth.query.get(user_id)
-            return {"usuario": usuario.json()}
+            user = UserAuth.query.get(user_id)
+            return {"usuario": user.json()}
 
         except AttributeError:
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
@@ -46,7 +45,7 @@ class ApiThing(Resource):
     @jwt_required()
     def post(self):
         body = request.json
-        thing = Thing(mac=body["mac"], user=current_user)
+        thing = Thing(mac=body["mac"], user=UserAuth.query.find_by(email=body["email"]))
         db.session.add(thing)
         db.session.commit()
 
@@ -54,17 +53,17 @@ class ApiThing(Resource):
 
     @jwt_required()
     def get(self):
-        coisas = Thing.query.all()
+        things = Thing.query.all()
 
-        return {"coisas": [coisa.json() for coisa in coisas]}
+        return {"coisas": [thing.json() for thing in things]}
 
 
 class ApiThingId(Resource):
     @jwt_required()
     def get(self, thing_id):
         try:
-            coisa = UserAuth.query.get(thing_id)
-            return {"usuario": coisa.json()}
+            thing = UserAuth.query.get(thing_id)
+            return {"usuario": thing.json()}
 
         except AttributeError:
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
