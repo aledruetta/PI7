@@ -5,7 +5,7 @@ import os
 from flask import Flask
 from flask_cors import CORS
 
-from webapp.ext import api, db, jwt
+from webapp.ext import api, bcrypt, db, jwt
 
 
 def create_app():
@@ -20,6 +20,7 @@ def create_app():
         app.config.from_object("webapp.config.Testing")
 
     db.init_app(app)
+    bcrypt.init_app(app)
     jwt.init_app(app)
     # auth.init_app(app)
     # mqtt.init_app(app)

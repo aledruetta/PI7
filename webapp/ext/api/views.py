@@ -2,12 +2,12 @@ import sqlalchemy
 from flask import request
 from flask_jwt import jwt_required
 from flask_restful import Resource
-from flask_bcrypt import generate_password_hash
 from validate_email import validate_email
 
 from webapp.ext.api.models import Thing
 from webapp.ext.auth import UserAuth
 from webapp.ext.db import db
+from webapp.ext.bcrypt import bcrypt
 
 HTTP_RESPONSE_CREATED = 201
 HTTP_RESPONSE_BAD_REQUEST = 400
@@ -22,7 +22,7 @@ class ApiUser(Resource):
         if not validate_email(email, check_smtp=False):
             return {"error": "Email inválido!"}, HTTP_RESPONSE_BAD_REQUEST
 
-        password = generate_password_hash(request.json["password"])
+        password = bcrypt.generate_password_hash(request.json["password"])
 
         try:
             user = UserAuth(email=email, password=password)

@@ -1,13 +1,13 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 from flask_wtf import FlaskForm
-from flask_bcrypt import check_password_hash
 from wtforms import PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Email, Length
 
 from webapp.ext.auth import UserAuth
 from webapp.ext.db import db
+from webapp.ext.bcrypt import bcrypt
 
 bp = Blueprint("auth", __name__)
 
@@ -24,7 +24,7 @@ def login():
     if form.validate_on_submit():
         user = UserAuth.query.filter(UserAuth.email == form.email.data).scalar()
 
-        if user and check_password_hash(user.password, form.password.data):
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             return redirect(url_for("site.index"))
 
@@ -38,7 +38,7 @@ def signup():
     form = LoginForm()
 
     if form.validate_on_submit():
-        password = sha256_crypt.hash(form.password.data)
+        password = bcrypt.generate_password_hash(form.password.data)
         user = UserAuth(email=form.email.data, password=password)
         db.session.add(user)
         db.session.commit()
