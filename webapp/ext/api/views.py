@@ -1,4 +1,5 @@
 from datetime import datetime
+import flask_jwt
 
 import sqlalchemy
 from flask import request
@@ -12,8 +13,9 @@ from webapp.ext.auth import UserAuth
 from webapp.ext.db import db
 
 HTTP_RESPONSE_CREATED = 201
+HTTP_RESPONSE_BAD_REQUEST = 400
+HTTP_RESPONSE_ANAUTHORIZE = 401
 HTTP_RESPONSE_NOT_FOUND = 404
-HTTP_BAD_REQUEST = 400
 
 
 class ApiUser(Resource):
@@ -21,7 +23,7 @@ class ApiUser(Resource):
         email = request.json["email"]
 
         if not validate_email(email, check_smtp=False):
-            return {"error": "Email inválido!"}, HTTP_BAD_REQUEST
+            return {"error": "Email inválido!"}, HTTP_RESPONSE_BAD_REQUEST
 
         password = sha256_crypt.hash(request.json["password"])
 
@@ -30,14 +32,13 @@ class ApiUser(Resource):
             db.session.add(user)
             db.session.commit()
         except sqlalchemy.exc.IntegrityError:
-            return {"error": "A conta de usuário já existe!"}, HTTP_BAD_REQUEST
+            return {"error": "A conta de usuário já existe!"}, HTTP_RESPONSE_BAD_REQUEST
 
         return {"response": "Created!"}, HTTP_RESPONSE_CREATED
 
     @jwt_required()
     def get(self):
         users = UserAuth.query.all()
-
         return {"usuarios": [user.json() for user in users]}
 
 
