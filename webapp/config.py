@@ -11,8 +11,8 @@ load_dotenv(os.path.join(basedir, ".env"), verbose=True)
 class Config:
     # Default configs
 
-    DEBUG = False
     TESTING = False
+    DEBUG = False
 
     STATIC_FOLDER = "static"
     TEMPLATES_FOLDER = "templates"
@@ -20,10 +20,6 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     TEMPLATES_AUTO_RELOAD = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    JWT_AUTH_USERNAME_KEY = "email"
-    JWT_AUTH_URL_RULE = "/token"
-    JWT_EXPIRATION_DELTA = timedelta(seconds=86400)  # one day
 
 
 class Production(Config):
@@ -33,6 +29,10 @@ class Production(Config):
     MQTT_BROKER_PORT = 1883
     MQTT_USERNAME = os.getenv("MQTT_USERNAME")
     MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
+
+    JWT_AUTH_USERNAME_KEY = "email"
+    JWT_AUTH_URL_RULE = "/token"
+    JWT_EXPIRATION_DELTA = timedelta(seconds=86400)  # one day
 
 
 class Development(Config):
