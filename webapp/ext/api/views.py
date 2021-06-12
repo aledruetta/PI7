@@ -31,7 +31,7 @@ class ApiUser(Resource):
             db.session.add(user)
             db.session.commit()
 
-            cmd = [
+            cmd_pass = [
                 "/usr/bin/sudo",
                 "/usr/bin/mosquitto_passwd",
                 "-b",
@@ -39,7 +39,11 @@ class ApiUser(Resource):
                 user.email,
                 password,
             ]
-            process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            process = subprocess.Popen(cmd_pass, stdout=subprocess.PIPE)
+            output, error = process.communicate()
+
+            cmd_sysd = ["/usr/bin/sudo", "/usr/bin/systemctl", "reload", "mosquitto.service"]
+            process = subprocess.Popen(cmd_sysd, stdout=subprocess.PIPE)
             output, error = process.communicate()
 
         except sqlalchemy.exc.IntegrityError:
