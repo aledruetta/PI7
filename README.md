@@ -64,7 +64,7 @@ cd webapp
 vagrant up
 ```
 
-### Referências:
+### Referências
 
 - [DigitalOcean - Initial Server Setup with Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
 - [DigitalOcean - How to use Certbot standalone mode to retrieve Letsencrypt certificates on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-use-certbot-standalone-mode-to-retrieve-let-s-encrypt-ssl-certificates-on-ubuntu-1804)
