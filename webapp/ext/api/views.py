@@ -1,5 +1,3 @@
-import subprocess
-
 import sqlalchemy
 from flask import request
 from flask_jwt import jwt_required
@@ -7,6 +5,7 @@ from flask_restful import Resource
 from passlib.hash import pbkdf2_sha512
 from validate_email import validate_email
 
+from webapp.ext.api.controllers import save_user
 from webapp.ext.api.models import Thing, UserAuth
 from webapp.ext.db import db
 
@@ -27,25 +26,7 @@ class ApiUser(Resource):
         hashed_password = pbkdf2_sha512.hash(password)
 
         try:
-            user = UserAuth(email=email, password=hashed_password)
-            db.session.add(user)
-            db.session.commit()
-
-            cmd_pass = [
-                "/usr/bin/sudo",
-                "/usr/bin/mosquitto_passwd",
-                "-b",
-                "/etc/mosquitto/passwd",
-                user.email,
-                password,
-            ]
-            process = subprocess.Popen(cmd_pass, stdout=subprocess.PIPE)
-            output, error = process.communicate()
-
-            cmd_sysd = ["/usr/bin/sudo", "/usr/bin/systemctl", "reload", "mosquitto.service"]
-            process = subprocess.Popen(cmd_sysd, stdout=subprocess.PIPE)
-            output, error = process.communicate()
-
+            save_user(email, password, hashed_password)
         except sqlalchemy.exc.IntegrityError:
             return {"error": "A conta de usuário já existe!"}, HTTP_RESPONSE_BAD_REQUEST
 
