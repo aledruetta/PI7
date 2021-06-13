@@ -8,8 +8,6 @@ from validate_email import validate_email
 from webapp.ext.api.repository import ThingRepository as thing_repo
 from webapp.ext.api.repository import UserRepository as user_repo
 from webapp.ext.api.repository import MqttRepository as mqtt_repo
-from webapp.ext.api.models import Thing
-from webapp.ext.db import db
 
 HTTP_RESPONSE_CREATED = 201
 HTTP_RESPONSE_BAD_REQUEST = 400
@@ -33,7 +31,7 @@ class ApiUser(Resource):
         except sqlalchemy.exc.IntegrityError:
             return {"error": "A conta de usuário já existe!"}, HTTP_RESPONSE_BAD_REQUEST
 
-        return {"response": "Created!"}, HTTP_RESPONSE_CREATED
+        return {"resposta": "Created!"}, HTTP_RESPONSE_CREATED
 
     @jwt_required()
     def get(self):
@@ -58,7 +56,7 @@ class ApiThing(Resource):
         user = user_repo.get_by_email(body["email"])
         thing_repo.save(body["mac"], user)
 
-        return {"response": "Created!"}, HTTP_RESPONSE_CREATED
+        return {"resposta": "Created!"}, HTTP_RESPONSE_CREATED
 
     @jwt_required()
     def get(self):
