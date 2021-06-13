@@ -5,8 +5,10 @@ from flask_restful import Resource
 from passlib.hash import pbkdf2_sha512
 from validate_email import validate_email
 
-from webapp.ext.api.controllers import save_user
-from webapp.ext.api.models import Thing, UserAuth
+from webapp.ext.api.repository import ThingRepository as thing_repo
+from webapp.ext.api.repository import UserRepository as user_repo
+from webapp.ext.api.repository import MqttRepository as mqtt_repo
+from webapp.ext.api.models import Thing
 from webapp.ext.db import db
 
 HTTP_RESPONSE_CREATED = 201
@@ -26,7 +28,8 @@ class ApiUser(Resource):
         hashed_password = pbkdf2_sha512.hash(password)
 
         try:
-            save_user(email, password, hashed_password)
+            user_repo.save(email, hashed_password)
+            mqtt_repo.save(email, password)
         except sqlalchemy.exc.IntegrityError:
             return {"error": "A conta de usuário já existe!"}, HTTP_RESPONSE_BAD_REQUEST
 
@@ -34,7 +37,7 @@ class ApiUser(Resource):
 
     @jwt_required()
     def get(self):
-        users = UserAuth.query.all()
+        users = user_repo.get_all()
         return {"usuarios": [user.json() for user in users]}
 
 
@@ -42,9 +45,8 @@ class ApiUserId(Resource):
     @jwt_required()
     def get(self, user_id):
         try:
-            user = UserAuth.query.get(user_id)
+            user = user_repo.get_by_id(user_id)
             return {"usuario": user.json()}
-
         except AttributeError:
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
 
@@ -53,16 +55,14 @@ class ApiThing(Resource):
     @jwt_required()
     def post(self):
         body = request.json
-        user = UserAuth.query.filter_by(email=body["email"]).first()
-        thing = Thing(mac=body["mac"], user=user)
-        db.session.add(thing)
-        db.session.commit()
+        user = user_repo.get_by_email(body["email"])
+        thing_repo.save(body["mac"], user)
 
         return {"response": "Created!"}, HTTP_RESPONSE_CREATED
 
     @jwt_required()
     def get(self):
-        things = Thing.query.all()
+        things = thing_repo.get_all()
 
         return {"coisas": [thing.json() for thing in things]}
 
@@ -71,8 +71,8 @@ class ApiThingId(Resource):
     @jwt_required()
     def get(self, thing_id):
         try:
-            thing = UserAuth.query.get(thing_id)
-            return {"usuario": thing.json()}
+            thing = thing_repo.get_by_id(thing_id)
+            return {"thing": thing.json()}
 
         except AttributeError:
             return {"error": "Recurso inexistente!"}, HTTP_RESPONSE_NOT_FOUND
