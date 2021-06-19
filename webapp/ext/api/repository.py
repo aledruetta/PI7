@@ -40,9 +40,21 @@ class ThingRepository:
         db.session.commit()
 
 
+def mqtt_reload():
+    cmd = ["/usr/bin/sudo", "/usr/bin/systemctl", "reload", "mosquitto.service"]
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    # output, error = process.communicate()
+
+
+def mqtt_passwd(cmd):
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    # output, error = process.communicate()
+
+
 class MqttRepository:
-    def save(email, password):
-        cmd_pass = [
+    @staticmethod
+    def save_user(email, password):
+        cmd = [
             "/usr/bin/sudo",
             "/usr/bin/mosquitto_passwd",
             "-b",
@@ -50,9 +62,24 @@ class MqttRepository:
             email,
             password,
         ]
-        process = subprocess.Popen(cmd_pass, stdout=subprocess.PIPE)
-        # output, error = process.communicate()
+        mqtt_passwd(cmd)
+        mqtt_reload()
 
-        cmd_sysd = ["/usr/bin/sudo", "/usr/bin/systemctl", "reload", "mosquitto.service"]
-        process = subprocess.Popen(cmd_sysd, stdout=subprocess.PIPE)
-        # output, error = process.communicate()
+    @staticmethod
+    def save_thing(mac, email):
+        acls = "/etc/mosquitto/acls"
+        exist = False
+
+        with open(acls, "r") as f:
+            for line in f:
+                if line[:-1] == f"user {email}":
+                    exist = True
+                    break
+
+        if not exist:
+            lines = [f"user {email}\n", f"topic readwrite {mac}/alarme\n", "\n"]
+
+            with open(acls, "a") as f:
+                f.writelines(lines)
+
+            mqtt_reload()
