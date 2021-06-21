@@ -1,4 +1,5 @@
 from functools import partial
+from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
 from flask import request
 from flask_jwt import jwt_required, current_identity
@@ -44,7 +45,7 @@ class ApiUser(Resource):
             user.save(email, hashed_password)
             mqtt.save_user(email, password)
         except sqlalchemy.exc.IntegrityError:
-            return {"error": "A conta de usuário já existe!"}, BAD_REQUEST
+            return {"error": "O recurso já existe!"}, BAD_REQUEST
 
         return {"resposta": "Created!"}, CREATED
 
@@ -75,6 +76,8 @@ class ApiThing(Resource):
             return {"resposta": "Created!"}, CREATED
         except AttributeError:
             return {"error": "Recurso inexistente!"}, NOT_FOUND
+        except sqlalchemy.exc.IntegrityError:
+            return {"error": "O recurso já existe!"}, BAD_REQUEST
 
     @jwt_required()
     def get(self):
