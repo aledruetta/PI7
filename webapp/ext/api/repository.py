@@ -70,7 +70,7 @@ class MqttRepository:
         acls = "/etc/mosquitto/acls"
         topic_line = f"topic readwrite {mac}/alarme\n"
         user_line = f"user {email}\n"
-        index = 1
+        index = 0
 
         with open(acls, "r+") as fd:
             lines = fd.readlines()
@@ -79,7 +79,7 @@ class MqttRepository:
                 if line.find(email) < 0:
                     index += 1
                 else:
-                    lines.insert(index, topic_line)
+                    lines.insert(index + 1, topic_line)
                     break
 
             if index == len(lines):
