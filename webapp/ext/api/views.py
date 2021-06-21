@@ -1,6 +1,6 @@
 import sqlalchemy
 from flask import request
-from flask_jwt import jwt_required
+from flask_jwt import jwt_required, current_identity
 from flask_restful import Resource
 from marshmallow import Schema, ValidationError, fields, validate
 from passlib.hash import pbkdf2_sha512
@@ -49,8 +49,11 @@ class ApiUser(Resource):
 
     @jwt_required()
     def get(self):
+        if not current_identity.is_admin:
+            return {"erro": "Erro de Autorização!"}, ANAUTHORIZE
+
         users = user.get_all()
-        return {"usuarios": [user.json() for user in users]}
+        return {"usuarios": [u.json() for u in users]}
 
 
 class ApiUserId(Resource):
@@ -74,6 +77,9 @@ class ApiThing(Resource):
         mac = request.json["mac"].upper()
         email = request.json["email"].lower()
 
+        if email != current_identity.email:
+            return {"erro": "Erro de Autorização!"}, ANAUTHORIZE
+
         try:
             u = user.get_by_email(email)
             thing.save(mac, u)
@@ -84,9 +90,32 @@ class ApiThing(Resource):
 
     @jwt_required()
     def get(self):
-        things = thing.get_all()
+        if not current_identity.is_admin:
+            return {"erro": "Erro de Autorização!"}, ANAUTHORIZE
 
-        return {"coisas": [thing.json() for thing in things]}
+        things = thing.get_all()
+        return {"coisas": [t.json() for t in things]}
+
+
+class ApiThingByEmail(Resource):
+    @jwt_required()
+    def post(self):
+        try:
+            ThingSchema().load(request.json, partial=("mac",))
+        except ValidationError as err:
+            return err.messages, BAD_REQUEST
+
+        email = request.json["email"].lower()
+
+        if email != current_identity.email:
+            return {"erro": "Erro de Autorização!"}, ANAUTHORIZE
+
+        try:
+            things = user.get_by_email(email).things
+
+            return {"coisas": [t.json() for t in things]}, CREATED
+        except AttributeError:
+            return {"error": "Recurso inexistente!"}, NOT_FOUND
 
 
 class ApiThingId(Resource):
