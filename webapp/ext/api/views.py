@@ -1,3 +1,4 @@
+from functools import partial
 import sqlalchemy
 from flask import request
 from flask_jwt import jwt_required, current_identity
@@ -56,29 +57,16 @@ class ApiUser(Resource):
         return {"usuarios": [u.json() for u in users]}
 
 
-class ApiUserId(Resource):
-    @jwt_required()
-    def get(self, user_id):
-        try:
-            u = user.get_by_id(user_id)
-            return {"usuario": u.json()}
-        except AttributeError:
-            return {"error": "Recurso inexistente!"}, NOT_FOUND
-
-
 class ApiThing(Resource):
     @jwt_required()
     def post(self):
         try:
-            ThingSchema().load(request.json)
+            ThingSchema().load(request.json, partial=("email",))
         except ValidationError as err:
             return err.messages, BAD_REQUEST
 
         mac = request.json["mac"].upper()
-        email = request.json["email"].lower()
-
-        if email != current_identity.email:
-            return {"erro": "Erro de Autorização!"}, ANAUTHORIZE
+        email = current_identity.email
 
         try:
             u = user.get_by_email(email)
@@ -90,40 +78,16 @@ class ApiThing(Resource):
 
     @jwt_required()
     def get(self):
+        args = request.args
+        if "isMy" in args and args["isMy"] == "true":
+            try:
+                u = user.get_by_email(current_identity.email)
+                return {"cosas": [t.json() for t in u.things]}
+            except AttributeError:
+                return {"error": "Recurso inexistente!"}, NOT_FOUND
+
         if not current_identity.is_admin:
             return {"erro": "Erro de Autorização!"}, ANAUTHORIZE
 
         things = thing.get_all()
         return {"coisas": [t.json() for t in things]}
-
-
-class ApiThingByEmail(Resource):
-    @jwt_required()
-    def post(self):
-        try:
-            ThingSchema().load(request.json, partial=("mac",))
-        except ValidationError as err:
-            return err.messages, BAD_REQUEST
-
-        email = request.json["email"].lower()
-
-        if email != current_identity.email:
-            return {"erro": "Erro de Autorização!"}, ANAUTHORIZE
-
-        try:
-            things = user.get_by_email(email).things
-
-            return {"coisas": [t.json() for t in things]}, CREATED
-        except AttributeError:
-            return {"error": "Recurso inexistente!"}, NOT_FOUND
-
-
-class ApiThingId(Resource):
-    @jwt_required()
-    def get(self, thing_id):
-        try:
-            t = thing.get_by_id(thing_id)
-            return {"thing": t.json()}
-
-        except AttributeError:
-            return {"error": "Recurso inexistente!"}, NOT_FOUND
